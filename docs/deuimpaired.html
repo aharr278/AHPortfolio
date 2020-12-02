@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ocean Plastic Pollution Review</title>
+    <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
+
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+        }
+
+        #map {
+            position: absolute;
+            width: 100%;
+            top: 0;
+            bottom: 0;
+        }
+
+        #fullscreen {
+            position:absolute;
+            box-shadow: 3px 3px 3px 1px rgba(150,150,150,.5);
+            z-index: 1
+        }
+        #search-box {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1;
+        }
+
+        #point-filter {
+            font-size: 18px;
+            padding: 6px;
+            border-style: solid;
+            border-color: gray;
+            border-width: .5px;
+            border-radius: 5px;
+            box-shadow: 3px 3px 3px 1px rgba(150,150,150,.5);
+        }
+       
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="search-box">
+        <input type="text" id="point-filter" placeholder="Search for points">
+    </div>
+    
+</body>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/map-austin/ckhsd7koi2vgz19nqmmhhq8wo',
+        center: [7.470703,4.302591],
+        zoom: 2,
+        minZoom:2,
+        maxZoom: 10
+    });
+
+    map.on('load', function(){
+        map.addSource('point-source', {
+            'type': 'vector',
+            'url': 'mapbox://map-austin.68c6w5cy'
+        });
+
+        map.addLayer({
+            "id": 'pollution-pois',
+            'source': 'point-source',
+            'source-layer': 'MidTerm_POI-56knyd',
+            'type': 'circle',
+            'paint': {
+                'circle-color': '#000000',
+                'circle-stroke-color': '#000000',
+                'circle-stroke-width': 2
+            }
+        });
+
+        //map.setFilter('pollution-pois', ['==','type', '']);
+    });
+
+    document.querySelector('#point-filter').addEventListener('keyup', function(e) {
+
+        if(e.which === 13) {
+            let searchTerm = document.querySelector('#point-filter').value;    // grab the value of the text box
+            map.setFilter('pollution-pois', ['==','SOURCE', searchTerm]);  // filter only on field that equals the search term
+        }
+    });
+
+    //add fullscreen control
+    var fullscreen = map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
+
+    var nav = map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    
+    // add a popup
+    var popup = new mapboxgl.Popup({
+        closeButton: false  // remove the X in the popup window
+    });
+
+    map.on('click','pollution-pois', function(e) {
+        let coordinates = e.lngLat;
+        let date = e.features[0].properties.DATE;
+        let info = e.features[0].properties.INFO;
+        popup
+            .setLngLat(coordinates)
+            .setHTML("<h3>This data was taken on "+date+" for "+info+".</h3>")
+            .addTo(map)
+            .setMaxWidth("200px")
+    });
+
+    // Change the mouse pointer style while hovering over a POI
+    map.on('mouseenter','pollution-pois', function() {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave','pollution-pois', function() {
+        map.getCanvas().style.cursor = '';
+    })
+
+</script>
+</html>
