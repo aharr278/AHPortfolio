@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ocean Plastic Pollution Review</title>
+    <title>Impaired Islands in the U.S. Review</title>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
 
@@ -55,23 +55,23 @@
     mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
     var map = new mapboxgl.Map({
         container: 'map',
-        style: 'mapbox://styles/map-austin/ckhsc4j0n13j519o74narh9jr',
-        center: [7.470703,4.302591],
-        zoom: 2,
+        style: 'mapbox://styles/map-austin/ckhsbwn0028wq19koo4y361g2',
+        center: [-100.458984,39.300299],
+        zoom: 4,
         minZoom:2,
-        maxZoom: 10
+        maxZoom: 16
     });
 
     map.on('load', function(){
         map.addSource('point-source', {
             'type': 'vector',
-            'url': 'mapbox://map-austin.68c6w5cy'
+            'url': 'mapbox://map-austin.d126ugu5'
         });
 
         map.addLayer({
             "id": 'pollution-pois',
             'source': 'point-source',
-            'source-layer': 'MidTerm_POI-56knyd',
+            'source-layer': 'radpoint2-89clmk',
             'type': 'circle',
             'paint': {
                 'circle-color': '#FFFFFF',
