@@ -87,7 +87,7 @@
 
         if(e.which === 13) {
             let searchTerm = document.querySelector('#point-filter').value;    // grab the value of the text box
-            map.setFilter('pollution-pois', ['==','SOURCE', searchTerm]);  // filter only on field that equals the search term
+            map.setFilter('pollution-pois', ['==','SOURCE_ORG', searchTerm]);  // filter only on field that equals the search term
         }
     });
 
