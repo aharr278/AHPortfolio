@@ -51,9 +51,16 @@
     var popup = new mapboxgl.Popup({
         closeButton: false  // remove the X in the popup window
     });
+    var getStyle = function(element, property) {
+    return window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(property) : element.style[property.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })];
+    };
 
+    var backgroundColor = getStyle(myDiv, "background-color");
+    
     map.on('click', function(e) {
-        window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  
+        myDivObj = document.getElementById("myDivID")
+            let myDivObjBgColor = window.getComputedStyle(myDivObj).backgroundColor;
+        /*window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  */
         // let coordinates = e.lngLat;
         // let color = e.features[0].properties.color;
         // let hex = e.features[0].properties.colorhex;
@@ -63,5 +70,7 @@
         //     .addTo(map)
         //     .setMaxWidth("200px")
     });
+
+
 </script>
 </html>
