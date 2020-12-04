@@ -40,6 +40,7 @@
         zoom: 4 ,
         minZoom:2,
         maxZoom: 16
+        preserveDrawingBuffer: true
     });
 
     //add fullscreen control
@@ -57,7 +58,7 @@
 
     var backgroundColor = getStyle(myDiv, "background-color");*/
 
-    map.on('click', function(e) {
+  /*  map.on('click', function(e) {
         let coordinates = e.lngLat;
         let point = e.point;
         let color = e.features.properties.background-color;
@@ -66,10 +67,10 @@
             .setLngLat(coordinates)
             .setHTML("<h3>"+color+"</h3>")
             .setMaxWidth("200px")
-            
-       /* myDivObj = document.getElementById("myDivID")
+
+        myDivObj = document.getElementById("myDivID")
             let myDivObjBgColor = window.getComputedStyle(myDivObj).backgroundColor;
-        /*window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  */
+        window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  
         // let coordinates = e.lngLat;
         // let color = e.features[0].properties.color;
         // let hex = e.features[0].properties.colorhex;
@@ -77,9 +78,23 @@
         //     .setLngLat(coordinates)
         //     .setHTML("<h3>This color is called "+color+" with a value of "+hex+".</h3>")
         //     .addTo(map)
-        //     .setMaxWidth("200px")*/
+        //     .setMaxWidth("200px")
+    });*/
+    map.on("mousemove", e => {
+      const canvas = map.getCanvas();
+      const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
+      if (gl) {
+        const { point } = e;
+        const { x, y } = point;
+        const data = new Uint8Array(4);
+        const canvasX = x - canvas.offsetLeft;
+        const canvasY = canvas.height - y - canvas.offsetTop;
+        gl.readPixels(canvasX, canvasY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
+        const [r, g, b, a] = data;
+        const color = `rgba(${r}, ${g}, ${b}, ${a})`;
+        console.log(`Color at (${x}, ${y}) = ${color}`);
+      }
     });
-
 
 </script>
 </html>
