@@ -25,15 +25,31 @@
             box-shadow: 3px 3px 3px 1px rgba(150,150,150,.5);
             z-index: 1
         }
-       
-    </style>
-</head>
-<body>
-    <div id="map"></div>
-</body>
-<script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
-    var map = new mapboxgl.Map({
+       </head>
+  <body style="padding: 0px; margin: 0px;">
+    <div
+      id="map"
+      style="position: absolute; top: 0px; bottom: 0px; width: 100%;"
+    ></div>
+    <div
+      id="colorPicker"
+      style="border-radius: 50%; width: 48px; height: 48px;
+      position: absolute; top: -100px; left: 0px; z-index: 999;
+      background: #000;
+      border: 4px dashed #fff;
+    "
+    ></div>
+    <div
+      id="colorText"
+      style="
+      width: 180px; font-size: 12px; font-family: monospace;
+      position: absolute; top: 0px; left: 0px; z-index: 999;
+      background: rgba(33, 33, 33, 0.8); color: #ffffff; font-weight: bold;
+    "
+    ></div>
+    <script>
+      mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
+        const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/map-austin/ckiapvu9k0wz119nkb95vug78',
         center: [-100.458984,39.300299],
@@ -41,60 +57,48 @@
         minZoom:2,
         maxZoom: 16
         preserveDrawingBuffer: true
-    });
+      });
+      window.map = map;
+      map.on("load", () => {
+        const colorStyle = document.getElementById("colorPicker").style;
+        const colorText = document.getElementById("colorText");
+        map.on("mousemove", e => {
+          const { point } = e;
+          const { x, y } = point;
+          const offset = 4;
+          colorStyle.left = `${x + offset}px`;
+          colorStyle.top = `${y + offset}px`;
+          const canvas = map.getCanvas();
+          const gl = canvas.getContext("webgl") || canvas.getContext("webgl2");
+          if (gl) {
+            const data = new Uint8Array(4);
+            const canvasX = x - canvas.offsetLeft;
+            const canvasY = canvas.height - y - canvas.offsetTop;
+            gl.readPixels(
+              canvasX,
+              canvasY,
+              1,
+              1,
+              gl.RGBA,
+              gl.UNSIGNED_BYTE,
+              data
+            );
+            const [r, g, b, a] = data;
+            const color = `rgba(${r}, ${g}, ${b}, ${a})`;
+            console.log(`Color at (${x}, ${y}) = ${color}`);
+            colorStyle.backgroundColor = color;
+            colorText.innerText = color;
+          }
+        });
 
-    //add fullscreen control
+    
+        });
+      });
+    </script>
+
     var fullscreen = map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
 
     var nav = map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-    
-    // add a popup
-    var popup = new mapboxgl.Popup({
-        closeButton: false  // remove the X in the popup window
-    });
-    /*var getStyle = function(element, property) {
-    return window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(property) : element.style[property.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })];
-    };
 
-    var backgroundColor = getStyle(myDiv, "background-color");*/
-
-  /*  map.on('click', function(e) {
-        let coordinates = e.lngLat;
-        let point = e.point;
-        let color = e.features.properties.background-color;
-
-        popup
-            .setLngLat(coordinates)
-            .setHTML("<h3>"+color+"</h3>")
-            .setMaxWidth("200px")
-
-        myDivObj = document.getElementById("myDivID")
-            let myDivObjBgColor = window.getComputedStyle(myDivObj).backgroundColor;
-        window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  
-        // let coordinates = e.lngLat;
-        // let color = e.features[0].properties.color;
-        // let hex = e.features[0].properties.colorhex;
-        // popup
-        //     .setLngLat(coordinates)
-        //     .setHTML("<h3>This color is called "+color+" with a value of "+hex+".</h3>")
-        //     .addTo(map)
-        //     .setMaxWidth("200px")
-    });*/
-    map.on("mousemove", e => {
-      const canvas = map.getCanvas();
-      const gl = canvas.getContext('webgl') || canvas.getContext('webgl2');
-      if (gl) {
-        const { point } = e;
-        const { x, y } = point;
-        const data = new Uint8Array(4);
-        const canvasX = x - canvas.offsetLeft;
-        const canvasY = canvas.height - y - canvas.offsetTop;
-        gl.readPixels(canvasX, canvasY, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
-        const [r, g, b, a] = data;
-        const color = `rgba(${r}, ${g}, ${b}, ${a})`;
-        console.log(`Color at (${x}, ${y}) = ${color}`);
-      }
-    });
-
-</script>
+  </body>
 </html>
