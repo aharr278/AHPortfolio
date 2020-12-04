@@ -51,14 +51,23 @@
     var popup = new mapboxgl.Popup({
         closeButton: false  // remove the X in the popup window
     });
-    var getStyle = function(element, property) {
+    /*var getStyle = function(element, property) {
     return window.getComputedStyle ? window.getComputedStyle(element, null).getPropertyValue(property) : element.style[property.replace(/-([a-z])/g, function (g) { return g[1].toUpperCase(); })];
     };
 
-    var backgroundColor = getStyle(myDiv, "background-color");
-    
+    var backgroundColor = getStyle(myDiv, "background-color");*/
+
     map.on('click', function(e) {
-        myDivObj = document.getElementById("myDivID")
+        let coordinates = e.lngLat;
+        let point = e.point;
+        let color = e.features.properties.background-color;
+
+        popup
+            .setLngLat(coordinates)
+            .setHTML("<h3>"+color+"</h3>")
+            .setMaxWidth("200px")
+            
+       /* myDivObj = document.getElementById("myDivID")
             let myDivObjBgColor = window.getComputedStyle(myDivObj).backgroundColor;
         /*window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  */
         // let coordinates = e.lngLat;
@@ -68,7 +77,7 @@
         //     .setLngLat(coordinates)
         //     .setHTML("<h3>This color is called "+color+" with a value of "+hex+".</h3>")
         //     .addTo(map)
-        //     .setMaxWidth("200px")
+        //     .setMaxWidth("200px")*/
     });
 
 
