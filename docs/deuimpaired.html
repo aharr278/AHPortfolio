@@ -108,7 +108,7 @@
         let detail = e.features[0].properties.DETAILURL;
         popup
             .setLngLat(coordinates)
-            .setHTML("<h3>This data was taken on "+start+" for the cycle year of: "+cycle+". For more info visit: <a href="+detail+">Detail URL</a> </h3>")
+            .setHTML("<h3>This data was taken on "+start+" for the cycle year of: "+cycle+". For more info visit <a href="+detail+">here</a>.</h3>")
             .addTo(map)
             .setMaxWidth("200px")
     });
