@@ -53,14 +53,15 @@
     });
 
     map.on('click', function(e) {
-        let coordinates = e.lngLat;
-        let color = e.features[0].properties.color;
-        let hex = e.features[0].properties.colorhex;
-        popup
-            .setLngLat(coordinates)
-            .setHTML("<h3>This color is called "+color+" with a value of "+hex+".</h3>")
-            .addTo(map)
-            .setMaxWidth("200px")
+        window.getComputedStyle( document.body ,null).getPropertyValue('background-color');  
+        // let coordinates = e.lngLat;
+        // let color = e.features[0].properties.color;
+        // let hex = e.features[0].properties.colorhex;
+        // popup
+        //     .setLngLat(coordinates)
+        //     .setHTML("<h3>This color is called "+color+" with a value of "+hex+".</h3>")
+        //     .addTo(map)
+        //     .setMaxWidth("200px")
     });
 </script>
 </html>
