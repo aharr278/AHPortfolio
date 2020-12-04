@@ -47,7 +47,7 @@
 <body>
     <div id="map"></div>
     <div id="search-box">
-        <input type="text" id="point-filter" placeholder="Search for points">
+        <input type="text" id="point-filter" placeholder="Search for points by reporter">
     </div>
     
 </body>
@@ -101,13 +101,14 @@
         closeButton: false  // remove the X in the popup window
     });
 
-    map.on('click','pollution-pois', function(e) {
+map.on('click','pollution-pois', function(e) {
         let coordinates = e.lngLat;
         let date = e.features[0].properties.DATE;
         let info = e.features[0].properties.INFO;
+        let source = e.features[0].properties.SOURCE;
         popup
             .setLngLat(coordinates)
-            .setHTML("<h3>This data was taken on "+date+" for "+info+".</h3>")
+            .setHTML("<h3>This data was taken on "+date+" for "+info+" by "+source+".</h3>")
             .addTo(map)
             .setMaxWidth("200px")
     });
