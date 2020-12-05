@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Non-specific Palette</title>
+    <title>Non-specific Palette with Assessed Waters</title>
     <script src='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.js'></script>
     <link href='https://api.mapbox.com/mapbox-gl-js/v1.12.0/mapbox-gl.css' rel='stylesheet' />
 
@@ -25,74 +25,102 @@
             box-shadow: 3px 3px 3px 1px rgba(150,150,150,.5);
             z-index: 1
         }
-       </head>
-  
+        #search-box {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1;
+        }
+
+        #point-filter {
+            font-size: 18px;
+            padding: 6px;
+            border-style: solid;
+            border-color: gray;
+            border-width: .5px;
+            border-radius: 5px;
+            box-shadow: 3px 3px 3px 1px rgba(150,150,150,.5);
+        }
+       
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    <div id="search-box">
+        <input type="text" id="point-filter" placeholder="Search for points by type">
+    </div>
     
-      #colorPicker{
-            style= "border-radius: 50%; width: 48px; height: 48px;
-            position: absolute; top: -100px; left: 0px; z-index: 999;
-            background: #000;
-            border: 4px dashed #fff;
-        "}
-      
-      #colorText{style="
-            width: 180px; font-size: 12px; font-family: monospace;
-            position: absolute; top: 0px; left: 0px; z-index: 999;
-            background: rgba(33, 33, 33, 0.8); color: #ffffff; font-weight: bold;
-    "}
-      
-    <script>
-      mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
-        const map = new mapboxgl.Map({
+</body>
+<script>
+    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
+    var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/map-austin/ckiapvu9k0wz119nkb95vug78',
-        center: [-100.458984,39.300299],
-        zoom: 4 ,
+        center: [7.470703,4.302591],
+        zoom: 4,
         minZoom:2,
-        maxZoom: 16,
-        preserveDrawingBuffer: true,
-      });
-      window.map = map;
-      map.on("load", () => {
-        const colorStyle = document.getElementById("colorPicker").style;
-        const colorText = document.getElementById("colorText");
-        map.on("mousemove", e => {
-          const { point } = e;
-          const { x, y } = point;
-          const offset = 4;
-          colorStyle.left = `${x + offset}px`;
-          colorStyle.top = `${y + offset}px`;
-          const canvas = map.getCanvas();
-          const gl = canvas.getContext("webgl") || canvas.getContext("webgl2");
-          if (gl) {
-            const data = new Uint8Array(4);
-            const canvasX = x - canvas.offsetLeft;
-            const canvasY = canvas.height - y - canvas.offsetTop;
-            gl.readPixels(
-              canvasX,
-              canvasY,
-              1,
-              1,
-              gl.RGBA,
-              gl.UNSIGNED_BYTE,
-              data
-            );
-            const [r, g, b, a] = data;
-            const color = `rgba(${r}, ${g}, ${b}, ${a})`;
-            console.log(`Color at (${x}, ${y}) = ${color}`);
-            colorStyle.backgroundColor = color;
-            colorText.innerText = color;
-          }
+        maxZoom: 14
+    });
+
+    map.on('load', function(){
+        map.addSource('point-source', {
+            'type': 'vector',
+            'url': 'mapbox://map-austin.bv51zhrq'
         });
 
-    
+        map.addLayer({
+            "id": 'water-pois',
+            'source': 'point-source',
+            'source-layer': 'assessedwater-cr25yl',
+            'type': 'circle',
+            'paint': {
+                'circle-color': '#FF0000',
+                'circle-stroke-color': '#000000',
+                'circle-stroke-width': 2
+            }
         });
-      });
-    </script>
 
+        //map.setFilter('pollution-pois', ['==','type', '']);
+    });
+
+    document.querySelector('#point-filter').addEventListener('keyup', function(e) {
+
+        if(e.which === 13) {
+            let searchTerm = document.querySelector('#point-filter').value;    // grab the value of the text box
+            map.setFilter('water-pois', ['==','SRCE_DESCR', searchTerm]);  // filter only on field that equals the search term
+        }
+    });
+
+    //add fullscreen control
     var fullscreen = map.addControl(new mapboxgl.FullscreenControl({container: document.querySelector('body')}));
 
     var nav = map.addControl(new mapboxgl.NavigationControl(), 'top-right');
+    
+    // add a popup
+    var popup = new mapboxgl.Popup({
+        closeButton: false  // remove the X in the popup window
+    });
 
-  </body>
+map.on('click','water-pois', function(e) {
+        let coordinates = e.lngLat;
+        let date = e.features[0].properties.START_DATE;
+        let info = e.features[0].properties.SRCE_DESCR;
+        let detail = e.features[0].properties.DETAILURL;
+        popup
+            .setLngLat(coordinates)
+            .setHTML("<h3>This data was taken on "+date+" assessed as "+info+". For more info visit <a href="+detail+">here</a>.</h3></h3>")
+            .addTo(map)
+            .setMaxWidth("200px")
+    });
+
+    // Change the mouse pointer style while hovering over a POI
+    map.on('mouseenter','water-pois', function() {
+        map.getCanvas().style.cursor = 'pointer';
+    });
+
+    map.on('mouseleave','water-pois', function() {
+        map.getCanvas().style.cursor = '';
+    })
+
+</script>
 </html>
