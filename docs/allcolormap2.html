@@ -32,14 +32,14 @@
     "
     ></div>
     <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
+      mapboxgl.accessToken = 'pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw';
         const map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/map-austin/ckiapvu9k0wz119nkb95vug78',
         center: [-100.458984,39.300299],
         zoom: 4 ,
         minZoom:2,
-        maxZoom: 16
+        maxZoom: 16,
         preserveDrawingBuffer: true
       });
       window.map = map;
