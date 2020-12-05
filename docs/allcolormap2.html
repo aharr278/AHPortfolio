@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Mapbox</title>
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1" />
+    <script src="https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.js"></script>
+    <link
+      href="https://api.tiles.mapbox.com/mapbox-gl-js/v1.3.1/mapbox-gl.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body style="padding: 0px; margin: 0px;">
+    <div
+      id="map"
+      style="position: absolute; top: 0px; bottom: 0px; width: 100%;"
+    ></div>
+    <div
+      id="colorPicker"
+      style="border-radius: 50%; width: 48px; height: 48px;
+      position: absolute; top: -100px; left: 0px; z-index: 999;
+      background: #000;
+      border: 4px dashed #fff;
+    "
+    ></div>
+    <div
+      id="colorText"
+      style="
+      width: 180px; font-size: 12px; font-family: monospace;
+      position: absolute; top: 0px; left: 0px; z-index: 999;
+      background: rgba(33, 33, 33, 0.8); color: #ffffff; font-weight: bold;
+    "
+    ></div>
+    <script>
+      mapboxgl.accessToken =
+        "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
+      const map = new mapboxgl.Map({
+        container: "map",
+        style: "mapbox://styles/mapbox/light-v10",
+        zoom: 4,
+        center: [77.209, 28.6139],
+        preserveDrawingBuffer: true
+      });
+      window.map = map;
+      map.on("load", () => {
+        const colorStyle = document.getElementById("colorPicker").style;
+        const colorText = document.getElementById("colorText");
+        map.on("mousemove", e => {
+          const { point } = e;
+          const { x, y } = point;
+          const offset = 4;
+          colorStyle.left = `${x + offset}px`;
+          colorStyle.top = `${y + offset}px`;
+          const canvas = map.getCanvas();
+          const gl = canvas.getContext("webgl") || canvas.getContext("webgl2");
+          if (gl) {
+            const data = new Uint8Array(4);
+            const canvasX = x - canvas.offsetLeft;
+            const canvasY = canvas.height - y - canvas.offsetTop;
+            gl.readPixels(
+              canvasX,
+              canvasY,
+              1,
+              1,
+              gl.RGBA,
+              gl.UNSIGNED_BYTE,
+              data
+            );
+            const [r, g, b, a] = data;
+            const color = `rgba(${r}, ${g}, ${b}, ${a})`;
+            console.log(`Color at (${x}, ${y}) = ${color}`);
+            colorStyle.backgroundColor = color;
+            colorText.innerText = color;
+          }
+        });
+
+        // add a colorful layer for inspecting
+        map.addLayer({
+          id: "testLayer",
+          type: "raster",
+          source: {
+            type: "raster",
+            tiles: [
+              "https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg"
+            ]
+          }
+        });
+      });
+    </script>
+  </body>
+</html>
