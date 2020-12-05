@@ -33,10 +33,10 @@
     ></div>
     <script>
       mapboxgl.accessToken =
-        "pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA";
+        "pk.eyJ1IjoibWFwLWF1c3RpbiIsImEiOiJja2ZiNzgwazYwcTVjMnJtcXJrMHNzemJ4In0.03tClBpKgaQa6i826qaOMw";
       const map = new mapboxgl.Map({
         container: "map",
-        style: "mapbox://styles/mapbox/light-v10",
+        style: "mapbox://styles/map-austin/ckiapvu9k0wz119nkb95vug78",
         zoom: 4,
         center: [77.209, 28.6139],
         preserveDrawingBuffer: true
@@ -74,17 +74,7 @@
           }
         });
 
-        // add a colorful layer for inspecting
-        map.addLayer({
-          id: "testLayer",
-          type: "raster",
-          source: {
-            type: "raster",
-            tiles: [
-              "https://stamen-tiles.a.ssl.fastly.net/watercolor/{z}/{x}/{y}.jpg"
-            ]
-          }
-        });
+        
       });
     </script>
   </body>
